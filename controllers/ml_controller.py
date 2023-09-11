@@ -6,6 +6,8 @@ import numpy as np
 import xgboost as xgb
 import pickle
 
+router = APIRouter()
+
 # Especifica el nombre del archivo en el que deseas guardar el modelo
 archivo_modelo = "model.pkl"
 
@@ -13,8 +15,6 @@ archivo_modelo = "model.pkl"
 with open(archivo_modelo, 'rb') as archivo:
     xgb_model = pickle.load(archivo)
 
-
-router = APIRouter()
 
 preds = []
 
@@ -24,8 +24,9 @@ def get_preds():
 
 
 
-@router.post("ml", status_code= status.HTTP_201_CREATED)
+@router.post("/ml", status_code= status.HTTP_201_CREATED)
 def predict(pred_input: Prediction_Input):
     prediction = xgb_model.predict(pred_input)
     prediction_dict = {"id": str(pred_input.id), "input":(pred_input.input), "pred":prediction}
-    preds.append(prediction_dict)
+    preds.append(pred_input)
+    return prediction_dict
